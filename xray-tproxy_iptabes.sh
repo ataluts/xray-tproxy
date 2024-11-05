@@ -2,7 +2,7 @@
 #This script redirects traffic coming from LAN (and ONLY from LAN) to Xray via TPROXY.
 #Traffic originated from the router itself is unaffected in any way.
 #Therefore things like DNS-requests from the router itself are not redirected to Xray by this script and can be compromised by ISP.
-#To specifically redirect DNS-requests on OpenWrt it is much easier to simply forward them to Xray using feature in dnsmasq itself then creating special filter rules in OUTPUT chain.
+#To specifically redirect DNS-requests on OpenWrt it is much easier to simply forward them to Xray using feature in dnsmasq itself than hijacking them via filter rules in OUTPUT chain.
 
 # To use this script you have do the following:
 #   0. This script uses 'iptables' to define packet filtering rules and redirect traffic via TPROXY. iptables are no longer supported by OpenWrt so if you really need to use them install 'iptables-nft', 'iptables-mod-filter' and 'iptables-mod-tproxy' for TPROXY
