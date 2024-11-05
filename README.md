@@ -4,7 +4,7 @@ This script redirects traffic from LAN (and ONLY from LAN) to Xray via TPROXY. T
 - `xray-tproxy_nftabes.sh` - version for nftables;
 - `xray-tproxy_iptabes.sh` - version for iptables (legacy);
 - `xray-tproxy` - service for OpenWrt;
-- `xray_config.json` - minimum config for Xray to use with all of these.
+- `xray_config.json` - basic config for Xray to use with all of these.
 
 ### Configure OpenWrt to exclusively use DNS provided by Xray
 - Remove DNS servers provided by ISP to the WAN interface:
@@ -24,4 +24,8 @@ Network -> DHCP and DNS
     Forwards
         DNS Forwards: 127.0.0.1#5353
 Save & Apply
+```
+- Create inbound for DNS-requests in Xray's config.
+```
+See 'xray_config.json' on how to do it
 ```
