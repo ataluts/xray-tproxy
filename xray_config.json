@@ -1,0 +1,85 @@
+{
+    "log": {
+        "access": "none",
+        "loglevel": "warning",
+        "dnsLog": false
+    },
+    "dns": {
+        "queryStrategy": "UseIP",
+        "disableCache": false,
+        "disableFallback": false,
+        "disableFallbackIfMatch": false,
+        "hosts": {
+            "dns.google": ["8.8.8.8", "8.8.4.4"]
+        },
+        "servers": [
+            "https+local://dns.google/dns-query",
+            "https+local://1.1.1.1/dns-query"
+        ]
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            { //DNS requests from the router itself -> dns module
+                "ruleTag": "dns_router",
+                "inboundTag": ["in_dns"],
+                "outboundTag": "out_dns"
+            },
+            { //DNS requests from clients to external servers -> dns module
+              //although DNS requests from clients satisfying any rule above this one (by any other criteria) should not be captured by dns module, in reality they PARTLY DO because of sniffing in inbounds (which is required if you use routing rules by domains) 
+                "ruleTag": "dns_clients",
+                "port": 53,
+                "network": "tcp,udp",
+                "outboundTag": "out_dns"
+            }
+            //Not matched -> direct
+        ]
+    },
+    "inbounds": [
+        { //input from TPROXY
+            "tag": "in_tproxy",
+            "listen": "127.0.0.1",
+            "port": 12345,
+            "protocol": "dokodemo-door",
+            "settings": {
+                "network": "tcp,udp",
+                "followRedirect": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls"]
+            },
+            "streamSettings": {
+                "sockopt": {
+                "tproxy": "tproxy"
+                }
+            }
+        },
+        { //input from OpenWrt DNS resolver (dnsmasq), append "list server '127.0.0.1#5353'" to  "config dnsmasq" section in '/etc/config/dhcp'
+            "tag": "in_dns",
+            "listen": "127.0.0.1",
+            "port": 5353,
+            "protocol": "dokodemo-door",
+            "settings": {
+                "address": "8.8.8.8",   //DNS module should take over that connection (through specific routing rule) so this address shouldn't matter much, leave as Google just in case
+                "port": 53,
+                "network": "tcp,udp",
+                "followRedirect": false
+            }
+        }
+    ],
+    "outbounds": [
+        { //output to conventional routing
+            "tag": "out_direct",
+            "protocol": "freedom"
+        },
+        { //output to DNS module
+            "tag": "out_dns",
+            "protocol": "dns"
+        },
+        { //output to blackhole
+            "tag": "out_block",
+            "protocol": "blackhole"
+        }
+    ]
+}
