@@ -4,8 +4,8 @@ This script redirects traffic from LAN (and ONLY from LAN) to Xray via TPROXY. T
 Only IPv4 supported for now.
 
 ### File functionality
-- `xray-tproxy_nftabes.sh` - version for nftables;
-- `xray-tproxy_iptabes.sh` - version for iptables (legacy);
+- `xray-tproxy_nftables.sh` - version for nftables;
+- `xray-tproxy_iptables.sh` - version for iptables (legacy);
 - `xray-tproxy` - service for OpenWrt;
 - `xray_config.json` - basic config for Xray to use with all of these.
 
